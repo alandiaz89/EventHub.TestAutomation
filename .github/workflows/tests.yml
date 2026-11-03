@@ -1,0 +1,27 @@
+name: UI tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ui-tests:
+    runs-on: ubuntu-latest
+    env:
+      UserEmail: ${{ secrets.EVENTHUB_USER_EMAIL }}
+      UserPassword: ${{ secrets.EVENTHUB_USER_PASSWORD }}
+      Browser__Headless: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - run: dotnet build --configuration Release
+
+      - name: Install Playwright browsers
+        run: pwsh EventHub.UiTests/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+
+      - run: dotnet test --configuration Release --no-build
