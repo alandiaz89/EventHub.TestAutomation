@@ -2,7 +2,7 @@ name: UI tests
 
 on:
   push:
-    branches: [main]
+    branches: [main, AlanBranch]
   pull_request:
 
 jobs:
