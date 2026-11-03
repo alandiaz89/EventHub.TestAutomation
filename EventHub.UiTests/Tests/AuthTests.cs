@@ -1,3 +1,5 @@
+using Allure.NUnit;
+using Allure.NUnit.Attributes;
 using EventHub.UiTests.Elements;
 using EventHub.UiTests.Hooks;
 using EventHub.UiTests.Pages;
@@ -7,6 +9,7 @@ using static Microsoft.Playwright.Assertions;
 namespace EventHub.UiTests.Tests;
 
 [TestFixture]
+[AllureNUnit]
 [Category("UI")]
 [Category("Auth")]
 public class AuthTests : PlaywrightHooks
@@ -16,6 +19,7 @@ public class AuthTests : PlaywrightHooks
     private (string Email, string Password) user => Config.RequireUserCredentials();
 
     [Test, Order(1)]
+    [AllureName("Login with valid credentials")]
     public async Task LoginWithValidCredentials()
     {
         await loginPage.Login(user.Email, user.Password);
@@ -23,6 +27,7 @@ public class AuthTests : PlaywrightHooks
     }
 
     [Test, Order(2)]
+    [AllureName("Login with invalid email shows validation error")]
     public async Task LoginWithInvalidEmail()
     {
         await loginPage.Login("Test", user.Password);
@@ -30,6 +35,7 @@ public class AuthTests : PlaywrightHooks
     }
 
     [Test, Order(3)]
+    [AllureName("Login with invalid password shows validation error")]
     public async Task LoginWithInvalidPassword()
     {
         await loginPage.Login(user.Email, "Test");
@@ -37,12 +43,21 @@ public class AuthTests : PlaywrightHooks
     }
 
     [Test, Order(4)]
+    [AllureName("Logout returns to the login page")]
     public async Task Logout()
     {
-
         await loginPage.Login(user.Email, user.Password);
         await Expect(Elements.HeaderElements.UserEmail).ToHaveTextAsync(user.Email);
         await header.Logout();
         await Expect(Elements.LoginElements.Heading).ToBeVisibleAsync();
+    }
+
+    //Expected failure test to demonstrate allure reporting of failed tests
+    [Test, Order(5)]
+    [AllureName("Login with valid credentials failure")]
+    public async Task LoginWithValidCredentialsFailure()
+    {
+        await loginPage.Login(user.Email, "testo");
+        await Expect(Elements.HeaderElements.UserEmail).ToHaveTextAsync(user.Email);
     }
 }

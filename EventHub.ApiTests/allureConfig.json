@@ -1,0 +1,9 @@
+{
+  "allure": {
+    "directory": "allure-results",
+    "failExceptions": [
+      "NUnit.Framework.AssertionException",
+      "NUnit.Framework.Internal.NUnitException"
+    ]
+  }
+}
