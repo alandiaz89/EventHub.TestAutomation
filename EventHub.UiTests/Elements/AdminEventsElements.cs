@@ -18,6 +18,9 @@ public sealed class AdminEventsElements(IPage page)
     public ILocator ImageUrlInput => page.GetByLabel("Image URL");
     public ILocator AddEventButton => page.GetByTestId("add-event-btn");
 
+    // Success pop-up shown after the event is saved
+    public ILocator EventCreatedToast => page.GetByText("Event created!");
+
     // Events table
     public ILocator AllEventsHeading => page.GetByRole(AriaRole.Heading, new() { Name = "All Events" });
     public ILocator EventRows => page.GetByTestId("event-table-row");

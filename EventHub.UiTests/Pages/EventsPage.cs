@@ -15,6 +15,11 @@ namespace EventHub.UiTests.Pages
             await eventsElements.EventTitleLink(eventName).ClickAsync();
         }
 
+        public async Task ClickFirstEventBookNow()
+        {
+            await eventsElements.FirstBookNowLink.ClickAsync();
+        }
+
         public async Task ClickEventBookNowLink(string eventName)
         {
             await eventsElements.BookNowLink(eventName).ClickAsync();

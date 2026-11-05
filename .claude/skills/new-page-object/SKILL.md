@@ -35,16 +35,16 @@ using EventHub.UiTests.Elements;
 
 namespace EventHub.UiTests.Pages;
 
-public sealed class LoginPage(LoginElements elements)
+public sealed class LoginPage(LoginElements loginElements)
 {
     public async Task Login(string email, string password)
     {
-        await elements.EmailInput.FillAsync(email);
-        await elements.PasswordInput.FillAsync(password);
-        await elements.SignInButton.ClickAsync();
+        await loginElements.EmailInput.FillAsync(email);
+        await loginElements.PasswordInput.FillAsync(password);
+        await loginElements.SignInButton.ClickAsync();
     }
 
-    public async Task ClickRegisterLink() => await elements.RegisterLink.ClickAsync();
+    public async Task ClickRegisterLink() => await loginElements.RegisterLink.ClickAsync();
 }
 ```
 
@@ -82,6 +82,7 @@ public sealed class PageFixture(ElementFixture elements)
 ## Rules
 
 - **Naming:** `<PageName>Page` in `EventHub.UiTests.Pages`, `<PageName>Elements` in `EventHub.UiTests.Elements`. Primary constructors.
+- **Elements parameter name:** when a page or component class takes an elements class in its constructor, name the parameter after the class itself in camelCase: `AdminEventsPage(AdminEventsElements adminEventsElements)`, `LoginPage(LoginElements loginElements)`. Not a generic `elements`.
 - **Method names:** no `Async` suffix on page or component methods, even though they return `Task` (write `Login`, not `LoginAsync`). A method that does one interaction is named for that interaction, with `Click` rather than `Open` or `Go`: `ClickEvents`, `ClickLogout`, `ClickRegisterLink`. A method that performs several steps is named for its intent: `Login`, `Register`, `CreateEvent`. Playwright's own calls inside the method (`ClickAsync`, `FillAsync`) keep their names.
 - **Seal the classes.** Page, elements and `PageFixture` classes are `public sealed`. Nothing inherits from them. `PlaywrightHooks` stays abstract.
 - **No assertions in page classes.** No `Expect(...)`, no `Assert`, no `Expect...Async` helpers. A page class only performs actions. Tests assert.

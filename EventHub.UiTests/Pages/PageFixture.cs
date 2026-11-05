@@ -10,5 +10,8 @@ public sealed class PageFixture(ElementFixture elements)
      public HeaderComponent Header { get; } = new(elements.HeaderElements);
     public HomePage HomePage { get; } = new(elements.HomeElements);
     public EventsPage EventsPage { get; } = new(elements.EventsElements);
+    public AdminEventsPage AdminEventsPage { get; } = new(elements.AdminEventsElements);
+    public EventDetailsPage EventDetailsPage { get; } = new(elements.EventDetailsElements);
+    public BookingsPage BookingsPage { get; } = new(elements.BookingsElements);
     public FooterComponent Footer { get; } = new(elements.FooterElements);
 }

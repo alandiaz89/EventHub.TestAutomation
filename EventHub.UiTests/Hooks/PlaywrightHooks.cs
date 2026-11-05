@@ -10,6 +10,9 @@ namespace EventHub.UiTests.Hooks;
 
 public abstract class PlaywrightHooks
 {
+    // Read-only after loading, so it is safe to share between fixtures running in parallel.
+    private static readonly Lazy<TestConfig> SharedConfig = new(TestConfig.Load);
+
     private IPlaywright? _playwright;
     private IBrowser? _browser;
     private IBrowserContext? _context;
@@ -20,12 +23,11 @@ public abstract class PlaywrightHooks
     protected ElementFixture Elements { get; private set; } = null!;
     protected PageFixture Pages { get; private set; } = null!;
 
-    protected TestConfig Config { get; private set; } = null!;
+    protected TestConfig Config => SharedConfig.Value;
 
     [SetUp]
     public async Task Setup()
     {
-        Config = TestConfig.Load();
         _playwright = await Playwright.CreateAsync();
         var factory = new BrowserFactory(Config.Browser);
         _browser = await factory.LaunchAsync(_playwright);
@@ -47,11 +49,29 @@ public abstract class PlaywrightHooks
     [TearDown]
     public async Task TearDown()
     {
-        await CollectDiagnostics();
-
-        if (_context != null) await _context.CloseAsync();
-        if (_browser != null) await _browser.CloseAsync();
-        _playwright?.Dispose();
+        try
+        {
+            await CollectDiagnostics();
+        }
+        finally
+        {
+            // Each step runs even if the one before it throws, so a failed close cannot leak a browser process.
+            try
+            {
+                if (_context != null) await _context.CloseAsync();
+            }
+            finally
+            {
+                try
+                {
+                    if (_browser != null) await _browser.CloseAsync();
+                }
+                finally
+                {
+                    _playwright?.Dispose();
+                }
+            }
+        }
     }
 
     private async Task CollectDiagnostics()

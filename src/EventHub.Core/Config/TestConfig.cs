@@ -4,12 +4,12 @@ namespace EventHub.Core.Config;
 
 public class TestConfig
 {
-    public string BaseUrl { get; set; } = "";
-    public string ApiBaseUrl { get; set; } = "";
-    public int TimeoutSeconds { get; set; } = 30;
-    public string UserEmail { get; set; } = "";
-    public string UserPassword { get; set; } = "";
-    public BrowserConfig Browser { get; set; } = new();
+    public string BaseUrl { get; init; } = "";
+    public string ApiBaseUrl { get; init; } = "";
+    public int TimeoutSeconds { get; init; } = 30;
+    public string UserEmail { get; init; } = "";
+    public string UserPassword { get; init; } = "";
+    public BrowserConfig Browser { get; init; } = new();
 
     public (string Email, string Password) RequireUserCredentials() =>
         string.IsNullOrWhiteSpace(UserEmail) || string.IsNullOrWhiteSpace(UserPassword)

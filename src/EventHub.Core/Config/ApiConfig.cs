@@ -3,7 +3,7 @@ namespace EventHub.Core.Config;
 public sealed class ApiConfig
 {
     public string BaseUrl { get; init; } = "";
-    public int TimeoutSeconds { get; init; } = 2;
+    public int TimeoutSeconds { get; init; } = 30;
 
     public static ApiConfig From(TestConfig config) =>
         Uri.TryCreate(config.ApiBaseUrl, UriKind.Absolute, out _)

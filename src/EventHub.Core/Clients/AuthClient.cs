@@ -10,4 +10,7 @@ public sealed class AuthClient(ApiClient api)
 
     public Task<RestResponse<AuthResponse>> Login(AuthInput input) =>
         api.Post<AuthResponse>("auth/login", input);
+
+    public Task<RestResponse<MeResponse>> Me() =>
+        api.Get<MeResponse>("auth/me");
 }

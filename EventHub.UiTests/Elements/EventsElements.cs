@@ -12,7 +12,11 @@ public sealed class EventsElements(IPage page)
 
     // Event cards
     public ILocator EventCards => page.GetByTestId("event-card");
-    public ILocator EventCard(string title) => EventCards.Filter(new() { HasText = title });
-    public ILocator EventTitleLink(string title) => EventCard(title).GetByRole(AriaRole.Link, new() { Name = title });
+    // Matches the card whose heading is exactly this title. A text filter would also match any title that contains it.
+    public ILocator EventCard(string title) => EventCards.Filter(new() { Has = page.GetByRole(AriaRole.Heading, new() { Name = title, Exact = true }) });
+    public ILocator EventTitleLink(string title) => EventCard(title).GetByRole(AriaRole.Link, new() { Name = title, Exact = true });
+    public ILocator FirstEventCard => EventCards.First;
+    public ILocator FirstEventTitle => FirstEventCard.GetByRole(AriaRole.Heading);
+    public ILocator FirstBookNowLink => FirstEventCard.GetByTestId("book-now-btn");
     public ILocator BookNowLink(string title) => EventCard(title).GetByTestId("book-now-btn");
 }

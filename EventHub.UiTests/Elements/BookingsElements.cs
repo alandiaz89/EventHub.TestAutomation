@@ -13,4 +13,10 @@ public sealed class BookingsElements(IPage page)
     public ILocator BookingId(string eventTitle) => BookingCard(eventTitle).GetByTestId("booking-id");
     public ILocator ViewDetailsLink(string eventTitle) => BookingCard(eventTitle).GetByRole(AriaRole.Link, new() { Name = "View Details" });
     public ILocator CancelBookingButton(string eventTitle) => BookingCard(eventTitle).GetByTestId("cancel-booking-btn");
+
+    // Cancel confirmation dialog and result
+    public ILocator CancelDialog => page.GetByRole(AriaRole.Dialog);
+    public ILocator ConfirmCancelButton => CancelDialog.GetByTestId("confirm-dialog-yes");
+    public ILocator BookingCancelledToast => page.GetByText("Booking cancelled successfully");
+    public ILocator NoBookingsHeading => page.GetByRole(AriaRole.Heading, new() { Name = "No bookings yet" });
 }

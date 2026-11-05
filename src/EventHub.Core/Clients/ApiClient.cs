@@ -6,6 +6,8 @@ namespace EventHub.Core.Clients;
 public sealed class ApiClient : IDisposable
 {
     private readonly RestClient _client;
+    private readonly List<ApiCall> _calls = [];
+    private string? _token;
 
     public ApiClient(ApiConfig config)
     {
@@ -19,20 +21,35 @@ public sealed class ApiClient : IDisposable
 
     public Task<RestResponse<T>> Post<T>(string endpoint, object body) => ExecuteAsync<T>(new RestRequest(endpoint, Method.Post).AddJsonBody(body));
 
+    public Task<RestResponse<T>> PostRawJson<T>(string endpoint, string jsonText) => ExecuteAsync<T>(new RestRequest(endpoint, Method.Post).AddStringBody(jsonText, DataFormat.Json));
+
     public Task<RestResponse<T>> Put<T>(string endpoint, object body) => ExecuteAsync<T>(new RestRequest(endpoint, Method.Put).AddJsonBody(body));
 
-    public Task<RestResponse<T>> Delete<T>(string endpoint) => ExecuteAsync<T>(new RestRequest(endpoint, Method.Delete));
+    public async Task<RestResponse> Delete(string endpoint) => await ExecuteAsync<object>(new RestRequest(endpoint, Method.Delete));
 
-    private Task<RestResponse<T>> ExecuteAsync<T>(RestRequest request, IDictionary<string, object?>? query = null)
+    public void SetToken(string token) => _token = token;
+
+    /// <summary>Requests sent so far by this client, for failure diagnostics. Never includes the token or auth bodies.</summary>
+    public IReadOnlyList<ApiCall> Calls => _calls;
+
+    private async Task<RestResponse<T>> ExecuteAsync<T>(RestRequest request, IDictionary<string, object?>? query = null)
     {
         foreach (var (name, value) in query ?? new Dictionary<string, object?>())
         {
-             if (value is not null)
+            if (value is not null)
             {
                 request.AddQueryParameter(name, Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture));
-            }    
+            }
         }
-        return _client.ExecuteAsync<T>(request);
+
+        if (_token is not null)
+        {
+            request.AddHeader("Authorization", $"Bearer {_token}");
+        }
+
+        var response = await _client.ExecuteAsync<T>(request);
+        _calls.Add(ApiCall.From(request, response, _client.BuildUri(request)));
+        return response;
     }
 
     public void Dispose() => _client.Dispose();

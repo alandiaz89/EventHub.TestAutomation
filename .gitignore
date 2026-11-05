@@ -497,3 +497,7 @@ appsettings.local.json
 # Local tooling and notes
 .mcp.json
 TestCases.md
+
+# Allure
+allure-report/
+allure-results/
