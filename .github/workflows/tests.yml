@@ -1,4 +1,4 @@
-name: UI tests
+name: Tests
 
 on:
   push:
@@ -19,9 +19,26 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - run: dotnet build --configuration Release
+      - run: dotnet build EventHub.UiTests --configuration Release
 
       - name: Install Playwright browsers
         run: pwsh EventHub.UiTests/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
 
-      - run: dotnet test --configuration Release --no-build
+      - run: dotnet test EventHub.UiTests --configuration Release --no-build
+
+  api-tests:
+    runs-on: ubuntu-latest
+    env:
+      UserEmail: ${{ secrets.EVENTHUB_USER_EMAIL }}
+      UserPassword: ${{ secrets.EVENTHUB_USER_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - run: dotnet build EventHub.ApiTests --configuration Release
+
+      - name: API tests
+        run: dotnet test EventHub.ApiTests --configuration Release --no-build
