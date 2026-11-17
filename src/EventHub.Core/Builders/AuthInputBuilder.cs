@@ -5,7 +5,7 @@ namespace EventHub.Core.Builders;
 public sealed class AuthInputBuilder
 {
     private string _email = $"api.user.{Guid.NewGuid():N}@example.com";
-    private string _password = "Test@1234";
+    private string _password = Guid.NewGuid().ToString("N")[..6];
 
     public AuthInputBuilder WithEmail(string email)
     {
