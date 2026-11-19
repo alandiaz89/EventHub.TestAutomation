@@ -2,7 +2,8 @@ using EventHub.ApiTests.Assertions;
 using Allure.NUnit;
 using EventHub.ApiTests.Hooks;
 using EventHub.Core.Builders;
-using EventHub.Core.Clients;
+using EventHub.Core.Http;
+using EventHub.Core.Services;
 using EventHub.Core.Models.Common;
 
 namespace EventHub.ApiTests.Tests.Auth;
@@ -18,7 +19,7 @@ public class RegisterTests : ApiHooks
     {
         var input = new AuthInputBuilder().Build();
 
-        var response = await Clients.Auth.Register(input);
+        var response = await Services.Auth.Register(input);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(201));
         Assert.That(response.Data, Is.Not.Null);
@@ -35,10 +36,10 @@ public class RegisterTests : ApiHooks
     public async Task Register_WithAlreadyRegisteredEmail_Returns400()
     {
         var input = new AuthInputBuilder().Build();
-        var first = await Clients.Auth.Register(input);
+        var first = await Services.Auth.Register(input);
         Assert.That((int)first.StatusCode, Is.EqualTo(201), "Precondition: first registration must succeed");
 
-        var response = await Clients.Auth.Register(input);
+        var response = await Services.Auth.Register(input);
 
         ApiAssert.Error(response, 400, "Email already registered");
     }
@@ -49,7 +50,7 @@ public class RegisterTests : ApiHooks
     {
         var input = new AuthInputBuilder().WithEmail(email).Build();
 
-        var response = await Clients.Auth.Register(input);
+        var response = await Services.Auth.Register(input);
 
         ApiAssert.ValidationError(response, "email", "A valid email is required", expectedDetailCount: 1);
     }
@@ -60,7 +61,7 @@ public class RegisterTests : ApiHooks
     {
         var input = new AuthInputBuilder().WithPassword(password).Build();
 
-        var response = await Clients.Auth.Register(input);
+        var response = await Services.Auth.Register(input);
 
         ApiAssert.ValidationError(response, "password", "Password must be at least 6 characters", expectedDetailCount: 1);
     }

@@ -3,7 +3,8 @@ using EventHub.ApiTests.Assertions;
 using Allure.NUnit;
 using EventHub.ApiTests.Hooks;
 using EventHub.Core.Builders;
-using EventHub.Core.Clients;
+using EventHub.Core.Http;
+using EventHub.Core.Services;
 using EventHub.Core.Models.Common;
 using EventHub.Core.Models.Events;
 
@@ -21,7 +22,7 @@ public class CreateEventTests : ApiHooks
         await LoginAsConfiguredUser();
         var input = new CreateEventInputBuilder().Build();
 
-        var response = await Clients.Events.CreateEvent(input);
+        var response = await Services.Events.CreateEvent(input);
         TrackEvent(response.Data?.Data);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(201));
@@ -40,7 +41,7 @@ public class CreateEventTests : ApiHooks
             Assert.That(created.ImageUrl, Is.EqualTo(input.ImageUrl));
         });
 
-        var fetched = await Clients.Events.GetEventById(created!.Id);
+        var fetched = await Services.Events.GetEventById(created!.Id);
 
         Assert.That((int)fetched.StatusCode, Is.EqualTo(200));
         Assert.That(fetched.Data?.Data?.Title, Is.EqualTo(input.Title));
@@ -54,7 +55,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Clients.Events.CreateEvent(new CreateEventInputBuilder().WithPrice(100).Build());
+        var response = await Services.Events.CreateEvent(new CreateEventInputBuilder().WithPrice(100).Build());
         TrackEvent(response.Data?.Data);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(201));
@@ -72,13 +73,13 @@ public class CreateEventTests : ApiHooks
         var first = new CreateEventInputBuilder().WithDescription("first").Build();
         var second = new CreateEventInputBuilder().WithTitle(first.Title).WithDescription("second").Build();
 
-        var firstResponse = await Clients.Events.CreateEvent(first);
+        var firstResponse = await Services.Events.CreateEvent(first);
         TrackEvent(firstResponse.Data?.Data);
         Assert.That((int)firstResponse.StatusCode, Is.EqualTo(201), "Arrange failed: the first event was not created");
-        var secondResponse = await Clients.Events.CreateEvent(second);
+        var secondResponse = await Services.Events.CreateEvent(second);
         TrackEvent(secondResponse.Data?.Data);
 
-        var fetched = await Clients.Events.GetEventById(firstResponse.Data!.Data!.Id);
+        var fetched = await Services.Events.GetEventById(firstResponse.Data!.Data!.Id);
 
         Assert.That(fetched.Data?.Data?.Description, Is.EqualTo("first"));
     }
@@ -89,7 +90,7 @@ public class CreateEventTests : ApiHooks
         await LoginAsConfiguredUser();
         var input = new CreateEventInputBuilder().WithImageUrl(null).Build();
 
-        var response = await Clients.Events.CreateEvent(input);
+        var response = await Services.Events.CreateEvent(input);
         TrackEvent(response.Data?.Data);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(201));
@@ -102,7 +103,7 @@ public class CreateEventTests : ApiHooks
         await LoginAsConfiguredUser();
         var input = new CreateEventInputBuilder().WithTotalSeats(25).Build();
 
-        var response = await Clients.Events.CreateEvent(input);
+        var response = await Services.Events.CreateEvent(input);
         TrackEvent(response.Data?.Data);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(201));
@@ -120,7 +121,7 @@ public class CreateEventTests : ApiHooks
         var payload = new CreateEventInputBuilder().Build().ToPayload();
         payload.Remove("description");
 
-        var response = await Clients.Events.CreateEvent(payload);
+        var response = await Services.Events.CreateEvent(payload);
         TrackEvent(response.Data?.Data);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(201));
@@ -133,7 +134,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Clients.Events.CreateEvent(new CreateEventInputBuilder().WithTotalSeats(totalSeats).Build());
+        var response = await Services.Events.CreateEvent(new CreateEventInputBuilder().WithTotalSeats(totalSeats).Build());
         TrackEvent(response.Data?.Data);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(201));
@@ -145,7 +146,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Clients.Events.CreateEvent(new CreateEventInputBuilder().WithPrice(0).Build());
+        var response = await Services.Events.CreateEvent(new CreateEventInputBuilder().WithPrice(0).Build());
         TrackEvent(response.Data?.Data);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(201));
@@ -158,7 +159,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Clients.Events.CreateEvent(new CreateEventInputBuilder().WithTotalSeats(totalSeats).Build());
+        var response = await Services.Events.CreateEvent(new CreateEventInputBuilder().WithTotalSeats(totalSeats).Build());
         TrackEvent(response.Data?.Data);
 
         ApiAssert.ValidationError(response, "totalSeats", "Total seats must be a positive integer");
@@ -169,7 +170,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Clients.Events.CreateEvent(new CreateEventInputBuilder().WithPrice(-1).Build());
+        var response = await Services.Events.CreateEvent(new CreateEventInputBuilder().WithPrice(-1).Build());
         TrackEvent(response.Data?.Data);
 
         ApiAssert.ValidationError(response, "price", "Price must be a non-negative number");
@@ -180,7 +181,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Clients.Events.CreateEvent(
+        var response = await Services.Events.CreateEvent(
             new CreateEventInputBuilder().WithEventDate(DateTimeOffset.UtcNow.AddDays(-1)).Build());
         TrackEvent(response.Data?.Data);
 
@@ -200,7 +201,7 @@ public class CreateEventTests : ApiHooks
         var payload = new CreateEventInputBuilder().Build().ToPayload();
         payload.Remove(field);
 
-        var response = await Clients.Events.CreateEvent(payload);
+        var response = await Services.Events.CreateEvent(payload);
         TrackEvent(response.Data?.Data);
 
         ApiAssert.ValidationError(response, field, expectedMessage);
@@ -221,7 +222,7 @@ public class CreateEventTests : ApiHooks
         var payload = new CreateEventInputBuilder().Build().ToPayload();
         payload[field] = value;
 
-        var response = await Clients.Events.CreateEvent(payload);
+        var response = await Services.Events.CreateEvent(payload);
         TrackEvent(response.Data?.Data);
 
         ApiAssert.ValidationError(response, field, expectedMessage);
@@ -232,7 +233,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Clients.Events.CreateEvent(new Dictionary<string, object?>());
+        var response = await Services.Events.CreateEvent(new Dictionary<string, object?>());
 
         ApiAssert.ValidationFields(response, "title", "category", "venue", "city", "eventDate", "price", "totalSeats");
     }
@@ -245,7 +246,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Clients.Events.CreateEvent(new CreateEventInputBuilder().WithTitle(new string('a', 1000)).Build());
+        var response = await Services.Events.CreateEvent(new CreateEventInputBuilder().WithTitle(new string('a', 1000)).Build());
         TrackEvent(response.Data?.Data);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(400));
@@ -258,7 +259,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Clients.Events.CreateEventRaw("{ \"title\": ");
+        var response = await Services.Events.CreateEventRaw("{ \"title\": ");
 
         Assert.That((int)response.StatusCode, Is.EqualTo(400));
     }
@@ -272,7 +273,7 @@ public class CreateEventTests : ApiHooks
             UseToken(token);
         }
 
-        var response = await Clients.Events.CreateEvent(new CreateEventInputBuilder().Build());
+        var response = await Services.Events.CreateEvent(new CreateEventInputBuilder().Build());
         TrackEvent(response.Data?.Data);
 
         ApiAssert.Error(response, 401, expectedError);

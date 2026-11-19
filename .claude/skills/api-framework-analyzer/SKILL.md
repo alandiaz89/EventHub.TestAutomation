@@ -13,23 +13,23 @@ This skill performs **analysis only**: never edit source files, install packages
 
 - First identify the stack, test runner, directory layout, project references, and maturity of the framework.
 - Default focus: C#, RestSharp, NUnit, Service Object Model (API counterpart of POM); adapt if the repository differs.
-- In EventHub, API building blocks live in `src/EventHub.Core` (`Clients/`, `Models/`, `Builders/`, `Config/`, `TestData/`); `EventHub.ApiTests` holds tests, `Hooks/`, and test-side helpers such as `Assertions/`.
-- **API contract reference:** read `.claude/skills/references/api-contract.md` (endpoints, status codes, schemas, and known deviations of the live API) before judging clients, models and tests. Use it as the baseline for coverage and model checks; if it disagrees with the code or the live API, report the conflict instead of choosing silently, and never treat its "Observed behavior" table as spec.
+- In EventHub, API building blocks live in `src/EventHub.Core` (`Http/`, `Services/`, `Models/`, `Builders/`, `Config/`, `TestData/`); `EventHub.ApiTests` holds tests, `Hooks/`, and test-side helpers such as `Assertions/`.
+- **API contract reference:** read `.claude/skills/references/api-contract.md` (endpoints, status codes, schemas, and known deviations of the live API) before judging services, models and tests. Use it as the baseline for coverage and model checks; if it disagrees with the code or the live API, report the conflict instead of choosing silently, and never treat its "Observed behavior" table as spec.
 - Respect the user's stated stage of development. Distinguish basic scaffolding from completed capabilities; do not label planned features as defects.
 - Prioritize actual source code, not just names. If source is unavailable, say exactly what remains unverified.
 
 ## Review procedure
 
-1. **Map architecture.** Inspect `.sln`, `.csproj` references, config (`TestConfig`, `ApiConfig`), `ApiClient`, service clients (`AuthClient`, `EventsClient`, ...), `ClientFixture`, models, builders, hooks, cleanup mechanism, assertion helpers, and tests. Confirm dependency direction (tests -> Core, never the reverse). Note paths and lines.
+1. **Map architecture.** Inspect `.sln`, `.csproj` references, config (`TestConfig`, `ApiConfig`), `ApiClient`, services (`AuthService`, `EventsService`, ...), `ServiceFixture`, models, builders, hooks, cleanup mechanism, assertion helpers, and tests. Confirm dependency direction (tests -> Core, never the reverse). Note paths and lines.
 
-2. **Trace lifecycle.** Follow configuration -> `RestClient`/`ApiClient` -> service clients -> `ClientFixture` -> hooks -> tests -> cleanup/teardown. Check:
+2. **Trace lifecycle.** Follow configuration -> `RestClient`/`ApiClient` -> services -> `ServiceFixture` -> hooks -> tests -> cleanup/teardown. Check:
    - Who creates and disposes `RestClient`; per-test vs per-fixture vs static.
    - Shared mutable state (default headers, tokens, cookies) under parallel execution.
    - Cleanup of created data runs even when the test fails or setup partially fails.
    - Cleanup registry is thread-safe and per-test.
 
 3. **Assess Service Object Model.**
-   - One client per API area/resource, named `<Area>Client`, exposing intent-level methods rather than raw `RestRequest` building in tests.
+   - One service per API area/resource, named `<Area>Service`, exposing intent-level methods rather than raw `RestRequest` building in tests.
    - Base URL, headers, auth and serialization configured in one place; no URL or credential strings in services or tests.
    - Services return typed responses (status code, body, headers preserved) and contain **no assertions**.
    - Tests contain no `RestRequest`, resource strings, or hand-written JSON.
@@ -39,7 +39,7 @@ This skill performs **analysis only**: never edit source files, install packages
    - Request/response models and builders live in Core, shared with hybrid UI tests.
    - Builders yield unique valid data by default; tests override only what matters.
    - Models match the contract in `api-contract.md` (field names, types, nullability, enums, required fields, naming/serialization attributes); error models are consistent. Note known live-API deviations (for example price returned as a string) as documented, not as model defects.
-   - Coverage gaps: compare the endpoint table in `api-contract.md` with the clients and tests, and list endpoints with no client or no tests as coverage gaps (enhancement, not defects).
+   - Coverage gaps: compare the endpoint table in `api-contract.md` with the services and tests, and list endpoints with no service or no tests as coverage gaps (enhancement, not defects).
    - Static test data is deterministic and not shared mutably.
 
 5. **Assess tests and assertions.**
@@ -51,7 +51,7 @@ This skill performs **analysis only**: never edit source files, install packages
 
 6. **Assess OOP and SOLID** (pragmatically, not as a checklist).
    - Encapsulation, abstraction, inheritance (valid NUnit hook inheritance vs needless coupling), polymorphism only where behavior varies.
-   - SRP, OCP (new endpoints added without editing existing clients), LSP, ISP, DIP (distinguish DIP from constructor injection).
+   - SRP, OCP (new endpoints added without editing existing services), LSP, ISP, DIP (distinguish DIP from constructor injection).
    - DRY: duplicated request building, repeated auth setup, copy-pasted assertions or payloads; extract only after real duplication.
 
 7. **Assess configuration, security and maintainability.**
@@ -89,7 +89,7 @@ Table columns: **Severity | Status | File:line | Finding | Why it matters | Smal
 Separate confirmed findings from optional improvements; no unsupported claims.
 
 ### 4. Design principles review
-Table covering: Service Object Model, Encapsulation, Abstraction, Inheritance, Polymorphism, SRP, OCP, LSP, ISP, DIP, DRY, Client/fixture lifecycle, Test data and cleanup, Assertion placement, Auth/secrets.
+Table covering: Service Object Model, Encapsulation, Abstraction, Inheritance, Polymorphism, SRP, OCP, LSP, ISP, DIP, DRY, Client/service fixture lifecycle, Test data and cleanup, Assertion placement, Auth/secrets.
 
 Each with **Pass / Concern / Not enough evidence / Not applicable** and one evidence-based explanation.
 

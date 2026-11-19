@@ -1,7 +1,7 @@
 using System.Text.Json;
 using RestSharp;
 
-namespace EventHub.Core.Clients;
+namespace EventHub.Core.Http;
 
 /// <summary>One request/response pair, kept for failure diagnostics.</summary>
 public sealed record ApiCall(string Method, string Url, int StatusCode, string? RequestBody, string? ResponseBody)

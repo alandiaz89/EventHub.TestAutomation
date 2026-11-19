@@ -26,7 +26,7 @@ You are a senior API test automation engineer who is proficient in C# (.NET 10),
    - State and side effects: for example available seats decrease after a booking, a cancelled booking changes status.
    Write each case as a short table row or list item: id, title, preconditions, request, expected status and body, expected side effect. Tie cases to `TestCases.md` numbers where one exists. Mark which to automate now.
 3. **Implement the client code in Core** (RestSharp):
-   - One thin client class per API area named `<Area>Client` (for example `EventsClient`, `BookingsClient`, `AuthClient`), following the Service Object Model the `framework-architect` agent enforces built on a shared `RestClient` created from `TestConfig`; methods return typed responses (`RestResponse<T>` or a small result type) and do not assert.
+   - One thin client class per API area named `<Area>Service` (for example `EventsService`, `BookingsService`, `AuthService`), following the Service Object Model the `framework-architect` agent enforces built on a shared `RestClient` created from `TestConfig`; methods return typed responses (`RestResponse<T>` or a small result type) and do not assert.
    - Request and response models as records or classes with `System.Text.Json` attributes only where names differ; builders produce valid default data with unique values so tests override only what matters.
    - Auth token handling in one place; never log or print tokens or passwords.
 4. **Implement the tests in `EventHub.ApiTests`:**

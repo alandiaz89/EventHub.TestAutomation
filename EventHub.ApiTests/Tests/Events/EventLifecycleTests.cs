@@ -3,7 +3,8 @@ using Allure.NUnit;
 using EventHub.ApiTests.Assertions;
 using EventHub.ApiTests.Hooks;
 using EventHub.Core.Builders;
-using EventHub.Core.Clients;
+using EventHub.Core.Http;
+using EventHub.Core.Services;
 using EventHub.Core.Models.Common;
 using EventHub.Core.Models.Events;
 
@@ -38,7 +39,7 @@ public class EventLifecycleTests : ApiHooks
 
         var id = await AllureApi.Step("POST /events: create the event", async () =>
         {
-            var response = await Clients.Events.CreateEvent(original);
+            var response = await Services.Events.CreateEvent(original);
             TrackEvent(response.Data?.Data);
 
             Assert.That((int)response.StatusCode, Is.EqualTo(201));
@@ -49,7 +50,7 @@ public class EventLifecycleTests : ApiHooks
 
         await AllureApi.Step("GET /events/{id}: read the created event", async () =>
         {
-            var response = await Clients.Events.GetEventById(id);
+            var response = await Services.Events.GetEventById(id);
 
             Assert.That((int)response.StatusCode, Is.EqualTo(200));
             Assert.That(response.Data?.Data?.Id, Is.EqualTo(id));
@@ -58,7 +59,7 @@ public class EventLifecycleTests : ApiHooks
 
         await AllureApi.Step("PUT /events/{id}: update the event", async () =>
         {
-            var response = await Clients.Events.UpdateEvent(id, changes);
+            var response = await Services.Events.UpdateEvent(id, changes);
 
             Assert.That((int)response.StatusCode, Is.EqualTo(200));
             Assert.That(response.Data?.Data?.Id, Is.EqualTo(id));
@@ -67,7 +68,7 @@ public class EventLifecycleTests : ApiHooks
 
         await AllureApi.Step("GET /events/{id}: read the updated event", async () =>
         {
-            var response = await Clients.Events.GetEventById(id);
+            var response = await Services.Events.GetEventById(id);
 
             Assert.That((int)response.StatusCode, Is.EqualTo(200));
             ApiAssert.EventMatches(changes, response.Data?.Data);
@@ -75,7 +76,7 @@ public class EventLifecycleTests : ApiHooks
 
         await AllureApi.Step("DELETE /events/{id}: delete the event", async () =>
         {
-            var response = await Clients.Events.DeleteEvent(id);
+            var response = await Services.Events.DeleteEvent(id);
 
             Assert.That((int)response.StatusCode, Is.EqualTo(200));
             Assert.That(response.ReadAs<MessageResponse>()?.Success, Is.True);
@@ -83,7 +84,7 @@ public class EventLifecycleTests : ApiHooks
 
         await AllureApi.Step("GET /events/{id}: the deleted event is gone", async () =>
         {
-            var response = await Clients.Events.GetEventById(id);
+            var response = await Services.Events.GetEventById(id);
 
             ApiAssert.Error(response, 404, $"Event with id {id} not found");
         });

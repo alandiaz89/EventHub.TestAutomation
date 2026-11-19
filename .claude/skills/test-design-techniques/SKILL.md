@@ -56,7 +56,7 @@ Only when the code is available (this repository, or code the user points to). T
 - **Condition coverage:** each part of a compound condition (`a && b`) is both true and false.
 - **Loops:** zero, one, many iterations.
 - **Error paths:** every `throw` and every catch.
-- Look at how the framework shapes requests too. Examples in this repo: `EventsInput.ToQuery()` (null values are skipped, `CategoryText` overrides `Category`), `ApiClient.ExecuteAsync` (adds the Bearer header only when a token is set), `AuthClient.LoginAndAuthenticate` (throws when the status is not 200 or the token is empty).
+- Look at how the framework shapes requests too. Examples in this repo: `EventsInput.ToQuery()` (null values are skipped, `CategoryText` overrides `Category`), `ApiClient.ExecuteAsync` (adds the Bearer header only when a token is set), `AuthService.LoginAndAuthenticate` (throws when the status is not 200 or the token is empty).
 
 ## 4. Experience-based techniques
 - **Error guessing:** injection strings, very long values, unicode and emoji, leading/trailing whitespace, special characters, case variants, zero and negative numbers, overflow, non-numeric text for numbers, repeated parameters, wrong content type, malformed JSON, empty body.

@@ -12,10 +12,10 @@ Source: OpenAPI 3.0 spec served by Swagger UI at https://api.eventhub.rahulshett
 
 | Method | Path | Auth in spec | Success | Error statuses in spec | Automated here |
 |---|---|---|---|---|---|
-| POST | `/auth/register` | no | 201 | 400 | yes (`AuthClient.Register`) |
-| POST | `/auth/login` | no | 200 | 400, 404 | yes (`AuthClient.Login`) |
-| GET | `/auth/me` | bearer | 200 | 401 | yes (`AuthClient.Me`) |
-| GET | `/events` | none declared | 200 | 500 | yes (`EventsClient.GetEvents`) |
+| POST | `/auth/register` | no | 201 | 400 | yes (`AuthService.Register`) |
+| POST | `/auth/login` | no | 200 | 400, 404 | yes (`AuthService.Login`) |
+| GET | `/auth/me` | bearer | 200 | 401 | yes (`AuthService.Me`) |
+| GET | `/events` | none declared | 200 | 500 | yes (`EventsService.GetEvents`) |
 | POST | `/events` | none declared | 201 | 400, 500 | yes (`CreateEvent`) |
 | GET | `/events/{id}` | none declared | 200 | 404, 500 | yes (`GetEventById`) |
 | PUT | `/events/{id}` | none declared | 200 | 400, 404, 500 | yes (`UpdateEvent`) |
@@ -243,7 +243,7 @@ Note that for the 500 rows the spec does list 500 as a possible response for tho
 
 ## Using this file for test design
 
-- Booking tests are the biggest gap: no client, models or tests exist yet. Needed: `BookingsClient`, `CreateBookingInput`/`Booking` models and a builder. Cases to cover: quantity boundaries 0, 1, 10, 11; insufficient seats (400); unknown event (404); seats decrease on booking and are restored on cancel; `bookingRef` format; filtering by `eventId` and `status`; lookup by id and by reference; cascade delete of bookings when the event is deleted.
+- Booking tests are the biggest gap: no client, models or tests exist yet. Needed: `BookingsService`, `CreateBookingInput`/`Booking` models and a builder. Cases to cover: quantity boundaries 0, 1, 10, 11; insufficient seats (400); unknown event (404); seats decrease on booking and are restored on cancel; `bookingRef` format; filtering by `eventId` and `status`; lookup by id and by reference; cascade delete of bookings when the event is deleted.
 - Event delete (`DeleteEventTests`) is empty: 200, 404 on second delete, event no longer retrievable, 404 for an unknown id.
 - Any endpoint where the spec does not declare auth: probe the live API with no token and with an invalid token before asserting a status.
 - Take every expected status code from a real response, and cross-check it with this file, per the `api-testcase-designer` agent rules.

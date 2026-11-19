@@ -2,7 +2,8 @@ using Allure.NUnit;
 using EventHub.ApiTests.Assertions;
 using EventHub.ApiTests.Hooks;
 using EventHub.Core.Builders;
-using EventHub.Core.Clients;
+using EventHub.Core.Http;
+using EventHub.Core.Services;
 using EventHub.Core.Models.Common;
 
 namespace EventHub.ApiTests.Tests.Events;
@@ -17,11 +18,11 @@ public class DeleteEventTests : ApiHooks
     public async Task DeleteEvent_WithExistingEvent_Returns200AndEventIsGone()
     {
         await LoginAsConfiguredUser();
-        var created = (await Clients.Events.CreateEvent(new CreateEventInputBuilder().Build())).Data?.Data;
+        var created = (await Services.Events.CreateEvent(new CreateEventInputBuilder().Build())).Data?.Data;
         TrackEvent(created);
         Assert.That(created, Is.Not.Null, "Precondition: the event to delete must be created");
 
-        var response = await Clients.Events.DeleteEvent(created!.Id);
+        var response = await Services.Events.DeleteEvent(created!.Id);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(200));
         var body = response.ReadAs<MessageResponse>();
@@ -31,7 +32,7 @@ public class DeleteEventTests : ApiHooks
             Assert.That(body?.Message, Is.EqualTo("Event deleted successfully"));
         });
 
-        var fetched = await Clients.Events.GetEventById(created.Id);
+        var fetched = await Services.Events.GetEventById(created.Id);
         ApiAssert.Error(fetched, 404, $"Event with id {created.Id} not found");
     }
 
@@ -41,7 +42,7 @@ public class DeleteEventTests : ApiHooks
         await LoginAsConfiguredUser();
         const int unknownId = 999999999;
 
-        var response = await Clients.Events.DeleteEvent(unknownId);
+        var response = await Services.Events.DeleteEvent(unknownId);
 
         ApiAssert.Error(response, 404, $"Event with id {unknownId} not found");
     }
@@ -51,7 +52,7 @@ public class DeleteEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Clients.Events.DeleteEventByRawId("abc");
+        var response = await Services.Events.DeleteEventByRawId("abc");
 
         ApiAssert.Error(response, 500, "Internal server error");
     }

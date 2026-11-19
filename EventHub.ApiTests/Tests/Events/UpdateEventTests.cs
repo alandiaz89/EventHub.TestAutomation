@@ -17,7 +17,7 @@ public class UpdateEventTests : ApiHooks
     {
         var (created, changes) = await CreateEventAndPrepareChanges();
 
-        var response = await Clients.Events.UpdateEvent(created.Id, changes);
+        var response = await Services.Events.UpdateEvent(created.Id, changes);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(200));
         Assert.Multiple(() =>
@@ -33,10 +33,10 @@ public class UpdateEventTests : ApiHooks
     public async Task UpdateEvent_ChangingEveryFieldExceptTitle_PersistsTheChanges()
     {
         var (created, changes) = await CreateEventAndPrepareChanges();
-        var updated = await Clients.Events.UpdateEvent(created.Id, changes);
+        var updated = await Services.Events.UpdateEvent(created.Id, changes);
         Assert.That((int)updated.StatusCode, Is.EqualTo(200), "Precondition: the update must succeed");
 
-        var fetched = await Clients.Events.GetEventById(created.Id);
+        var fetched = await Services.Events.GetEventById(created.Id);
 
         Assert.That((int)fetched.StatusCode, Is.EqualTo(200));
         ApiAssert.EventMatches(changes, fetched.Data?.Data);
@@ -46,7 +46,7 @@ public class UpdateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
         var original = new CreateEventInputBuilder().Build();
-        var created = (await Clients.Events.CreateEvent(original)).Data?.Data;
+        var created = (await Services.Events.CreateEvent(original)).Data?.Data;
         TrackEvent(created);
         Assert.That(created, Is.Not.Null, "Precondition: the event to update must be created");
 

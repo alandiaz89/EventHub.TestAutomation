@@ -1,7 +1,7 @@
 using System.Text.Json;
 using RestSharp;
 
-namespace EventHub.Core.Clients;
+namespace EventHub.Core.Http;
 
 public static class RestResponseExtensions
 {

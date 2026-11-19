@@ -1,9 +1,10 @@
+using EventHub.Core.Http;
 using EventHub.Core.Models.Events;
 using RestSharp;
 
-namespace EventHub.Core.Clients;
+namespace EventHub.Core.Services;
 
-public sealed class EventsClient(ApiClient api)
+public sealed class EventsService(ApiClient api)
 {
     public Task<RestResponse<EventsResponse>> GetEvents(EventsInput input) =>
         api.Get<EventsResponse>("events", input.ToQuery());

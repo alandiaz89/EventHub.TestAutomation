@@ -1,6 +1,7 @@
 using EventHub.Core.Builders;
 using EventHub.Core.Cleanup;
-using EventHub.Core.Clients;
+using EventHub.Core.Http;
+using EventHub.Core.Services;
 using EventHub.Core.Config;
 using EventHub.Core.Models.Auth;
 using EventHub.Core.Models.Events;
@@ -11,14 +12,14 @@ public abstract class HybridHooks : PlaywrightHooks
 {
     private ApiClient? _api;
 
-    protected ClientFixture Clients { get; private set; } = null!;
+    protected ServiceFixture Services { get; private set; } = null!;
     protected CleanupRegistry Cleanup { get; } = new();
 
     [SetUp]
     public void SetUpApi()
     {
         _api = new ApiClient(ApiConfig.From(Config));
-        Clients = new ClientFixture(_api);
+        Services = new ServiceFixture(_api);
     }
 
     [TearDown]
@@ -41,7 +42,7 @@ public abstract class HybridHooks : PlaywrightHooks
     protected async Task<AuthInput> RegisterUser()
     {
         var user = new AuthInputBuilder().Build();
-        var response = await Clients.Auth.Register(user);
+        var response = await Services.Auth.Register(user);
         Assert.That((int)response.StatusCode, Is.EqualTo(201), "Precondition: registration must succeed");
         return user;
     }
@@ -49,7 +50,7 @@ public abstract class HybridHooks : PlaywrightHooks
     protected void CancelBookingsAfterTest(AuthInput owner) =>
         Cleanup.Add(async () =>
         {
-            var login = await Clients.Auth.Login(owner);
+            var login = await Services.Auth.Login(owner);
             var token = login.Data?.Token;
             if (string.IsNullOrEmpty(token))
             {
@@ -57,17 +58,17 @@ public abstract class HybridHooks : PlaywrightHooks
             }
 
             _api!.SetToken(token);
-            var bookings = await Clients.Bookings.GetBookings();
+            var bookings = await Services.Bookings.GetBookings();
             foreach (var booking in bookings.Data?.Data ?? [])
             {
-                await Clients.Bookings.CancelBooking(booking.Id);
+                await Services.Bookings.CancelBooking(booking.Id);
             }
         });
     
     protected void DeleteEventAfterTest(AuthInput owner, string title) =>
         Cleanup.Add(async () =>
         {
-            var login = await Clients.Auth.Login(owner);
+            var login = await Services.Auth.Login(owner);
             var token = login.Data?.Token;
             if (string.IsNullOrEmpty(token))
             {
@@ -75,10 +76,10 @@ public abstract class HybridHooks : PlaywrightHooks
             }
 
             _api!.SetToken(token);
-            var found = await Clients.Events.GetEvents(new EventsInput { Search = title, Limit = 100 });
+            var found = await Services.Events.GetEvents(new EventsInput { Search = title, Limit = 100 });
             foreach (var item in (found.Data?.Data ?? []).Where(e => e.Title == title))
             {
-                await Clients.Events.DeleteEvent(item.Id);
+                await Services.Events.DeleteEvent(item.Id);
             }
         });
 }

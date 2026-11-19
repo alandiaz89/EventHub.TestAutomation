@@ -1,9 +1,10 @@
+using EventHub.Core.Http;
 using EventHub.Core.Models.Bookings;
 using RestSharp;
 
-namespace EventHub.Core.Clients;
+namespace EventHub.Core.Services;
 
-public sealed class BookingsClient(ApiClient api)
+public sealed class BookingsService(ApiClient api)
 {
     public Task<RestResponse<BookingsResponse>> GetBookings() =>
         api.Get<BookingsResponse>("bookings");

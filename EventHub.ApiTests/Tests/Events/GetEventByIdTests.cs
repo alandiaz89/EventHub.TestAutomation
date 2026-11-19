@@ -18,11 +18,11 @@ public class GetEventByIdTests : ApiHooks
     {
         await LoginAsConfiguredUser();
         var input = new CreateEventInputBuilder().WithTotalSeats(25).WithPrice(150).Build();
-        var created = (await Clients.Events.CreateEvent(input)).Data?.Data;
+        var created = (await Services.Events.CreateEvent(input)).Data?.Data;
         TrackEvent(created);
         Assert.That(created, Is.Not.Null, "Arrange failed: the event was not created");
 
-        var response = await Clients.Events.GetEventById(created!.Id);
+        var response = await Services.Events.GetEventById(created!.Id);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(200));
         var fetched = response.Data?.Data;
@@ -49,11 +49,11 @@ public class GetEventByIdTests : ApiHooks
     public async Task GetEventById_WithExistingEvent_ReturnsJsonWithEveryDocumentedField()
     {
         await LoginAsConfiguredUser();
-        var created = (await Clients.Events.CreateEvent(new CreateEventInputBuilder().Build())).Data?.Data;
+        var created = (await Services.Events.CreateEvent(new CreateEventInputBuilder().Build())).Data?.Data;
         TrackEvent(created);
         Assert.That(created, Is.Not.Null, "Arrange failed: the event was not created");
 
-        var response = await Clients.Events.GetEventById(created!.Id);
+        var response = await Services.Events.GetEventById(created!.Id);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(200));
         Assert.That(response.ContentType, Does.StartWith("application/json"));
@@ -77,11 +77,11 @@ public class GetEventByIdTests : ApiHooks
     public async Task GetEventById_WithExistingEvent_DoesNotReturnUndocumentedField(string field)
     {
         await LoginAsConfiguredUser();
-        var created = (await Clients.Events.CreateEvent(new CreateEventInputBuilder().Build())).Data?.Data;
+        var created = (await Services.Events.CreateEvent(new CreateEventInputBuilder().Build())).Data?.Data;
         TrackEvent(created);
         Assert.That(created, Is.Not.Null, "Arrange failed: the event was not created");
 
-        var response = await Clients.Events.GetEventById(created!.Id);
+        var response = await Services.Events.GetEventById(created!.Id);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(200));
         using var json = JsonDocument.Parse(response.Content!);
@@ -95,7 +95,7 @@ public class GetEventByIdTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Clients.Events.GetEventById(id);
+        var response = await Services.Events.GetEventById(id);
 
         ApiAssert.Error(response, 404, $"Event with id {id} not found");
     }
@@ -108,7 +108,7 @@ public class GetEventByIdTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Clients.Events.GetEventByRawId("99999999999999999999");
+        var response = await Services.Events.GetEventByRawId("99999999999999999999");
 
         ApiAssert.Error(response, 404, "Event not found");
     }
@@ -122,7 +122,7 @@ public class GetEventByIdTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Clients.Events.GetEventByRawId(id);
+        var response = await Services.Events.GetEventByRawId(id);
 
         ApiAssert.Error(response, 400, "Event not found");
     }
@@ -137,7 +137,7 @@ public class GetEventByIdTests : ApiHooks
             UseToken(token);
         }
 
-        var response = await Clients.Events.GetEventById(1);
+        var response = await Services.Events.GetEventById(1);
 
         ApiAssert.Error(response, 401, expectedError);
     }

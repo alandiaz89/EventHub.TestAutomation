@@ -1,7 +1,8 @@
 using System.Text;
 using Allure.Net.Commons;
 using EventHub.Core.Cleanup;
-using EventHub.Core.Clients;
+using EventHub.Core.Http;
+using EventHub.Core.Services;
 using EventHub.Core.Config;
 using EventHub.Core.Models.Auth;
 using EventHub.Core.Models.Events;
@@ -10,7 +11,7 @@ namespace EventHub.ApiTests.Hooks;
 
 /// <summary>
 /// Base class for API fixtures. NUnit reuses one fixture instance for all of its tests, so the per-test state below
-/// (<c>_api</c>, <see cref="Clients"/>, <see cref="Cleanup"/>) is only safe because tests inside a fixture run one at a
+/// (<c>_api</c>, <see cref="Services"/>, <see cref="Cleanup"/>) is only safe because tests inside a fixture run one at a
 /// time (parallelism is at fixture level, see AssemblyInfo). Do not enable ParallelScope.Children without changing this.
 /// </summary>
 public abstract class ApiHooks
@@ -21,14 +22,14 @@ public abstract class ApiHooks
     private ApiClient? _api;
 
     protected TestConfig Config => SharedConfig.Value;
-    protected ClientFixture Clients { get; private set; } = null!;
+    protected ServiceFixture Services { get; private set; } = null!;
     protected CleanupRegistry Cleanup { get; } = new();
 
     [SetUp]
     public void Setup()
     {
         _api = new ApiClient(ApiConfig.From(Config));
-        Clients = new ClientFixture(_api);
+        Services = new ServiceFixture(_api);
     }
 
     [TearDown]
@@ -61,7 +62,7 @@ public abstract class ApiHooks
         var id = created.Id;
         Cleanup.Add(async () =>
         {
-            var response = await Clients.Events.DeleteEvent(id);
+            var response = await Services.Events.DeleteEvent(id);
             var status = (int)response.StatusCode;
 
             // 404 means the test already deleted it; anything else that is not 2xx means the event leaked.
@@ -83,7 +84,7 @@ public abstract class ApiHooks
     /// <summary>Logs in and uses the token for the following requests. Fails the test as a precondition if login fails.</summary>
     protected async Task LoginAs(AuthInput input)
     {
-        var response = await Clients.Auth.Login(input);
+        var response = await Services.Auth.Login(input);
         var token = response.Data?.Token;
 
         if ((int)response.StatusCode != 200 || string.IsNullOrEmpty(token))

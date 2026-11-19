@@ -17,8 +17,9 @@ The tests run against a shared public site. Every test creates its own data and 
 EventHub.TestAutomation.sln
 ├── src/EventHub.Core/        Shared code used by both test projects
 │   ├── Config/               TestConfig, ApiConfig, BrowserConfig (appsettings.json + environment variables)
-│   ├── Clients/              ApiClient (RestSharp transport) and one service class per API area:
-│   │                         AuthClient, EventsClient, BookingsClient; ClientFixture exposes them
+│   ├── Http/                 ApiClient (RestSharp transport), ApiCall, RestResponseExtensions
+│   ├── Services/             One service class per API area (AuthService, EventsService,
+│   │                         BookingsService); ServiceFixture exposes them
 │   ├── Models/               Request and response models
 │   ├── Builders/             Data builders that produce unique, valid test data
 │   ├── TestData/             Value lists the builders pick from
@@ -38,9 +39,9 @@ EventHub.TestAutomation.sln
 
 ### Conventions
 
-- Shared code (clients, models, builders, config) lives in `EventHub.Core`. Test projects contain tests and their own hooks. The UI project also holds page and elements classes.
+- Shared code (services, models, builders, config) lives in `EventHub.Core`. Test projects contain tests and their own hooks. The UI project also holds page and elements classes.
 - **UI:** the Page Object Model is split in two. Elements classes hold locators, page classes hold actions and no assertions, and tests assert through the elements. Locators prefer role, label and test id over CSS; there are no fixed sleeps.
-- **API:** one service class per API area (`<Area>Client`) with no assertions. Tests assert on status code first, then body, and write the expected status as a number (`Is.EqualTo(404)`).
+- **API:** one service class per API area (`<Area>Service`) with no assertions. Tests assert on status code first, then body, and write the expected status as a number (`Is.EqualTo(404)`).
 - Fixtures and page objects are created per test with plain constructor injection. There is no DI container and no static mutable state.
 - Never commit secrets. Credentials come from environment variables or a local file that git ignores.
 
@@ -139,7 +140,7 @@ The repository needs two secrets, `EVENTHUB_USER_EMAIL` and `EVENTHUB_USER_PASSW
 
 - **New API test:** add the client method, models and builder to `EventHub.Core`, then the test class in `EventHub.ApiTests/Tests/`, inheriting `ApiHooks`. Register anything the test creates for cleanup (`TrackEvent`).
 - **New UI test:** add or extend a page and its elements class, register them in `PageFixture` and `ElementFixture`, then write the test inheriting `PlaywrightHooks`.
-- **New hybrid test:** inherit `HybridHooks`. It gives you `Clients` for API setup, and helpers such as `RegisterUser` and `DeleteEventAfterTest` for data the test creates.
+- **New hybrid test:** inherit `HybridHooks`. It gives you `Services` for API setup, and helpers such as `RegisterUser` and `DeleteEventAfterTest` for data the test creates.
 
 The API contract, with its endpoints, schemas and known differences from the live API, is in `.claude/skills/references/api-contract.md`.
 

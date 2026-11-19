@@ -1,5 +1,6 @@
 using System.Text.Json;
-using EventHub.Core.Clients;
+using EventHub.Core.Http;
+using EventHub.Core.Services;
 using EventHub.Core.Models.Common;
 using EventHub.Core.Models.Events;
 using RestSharp;

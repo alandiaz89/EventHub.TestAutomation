@@ -1,7 +1,7 @@
 using EventHub.Core.Config;
 using RestSharp;
 
-namespace EventHub.Core.Clients;
+namespace EventHub.Core.Http;
 
 public sealed class ApiClient : IDisposable
 {
