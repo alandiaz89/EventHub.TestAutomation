@@ -17,7 +17,7 @@ public class GetEventByIdTests : ApiHooks
     public async Task GetEventById_WithExistingEvent_Returns200AndMatchesCreatedData()
     {
         await LoginAsConfiguredUser();
-        var input = new CreateEventInputBuilder().WithTotalSeats(25).WithPrice(150).Build();
+        var input = new CreateEventRequestBuilder().WithTotalSeats(25).WithPrice(150).Build();
         var created = (await Services.Events.CreateEvent(input)).Data?.Data;
         TrackEvent(created);
         Assert.That(created, Is.Not.Null, "Arrange failed: the event was not created");
@@ -49,7 +49,7 @@ public class GetEventByIdTests : ApiHooks
     public async Task GetEventById_WithExistingEvent_ReturnsJsonWithEveryDocumentedField()
     {
         await LoginAsConfiguredUser();
-        var created = (await Services.Events.CreateEvent(new CreateEventInputBuilder().Build())).Data?.Data;
+        var created = (await Services.Events.CreateEvent(new CreateEventRequestBuilder().Build())).Data?.Data;
         TrackEvent(created);
         Assert.That(created, Is.Not.Null, "Arrange failed: the event was not created");
 
@@ -77,7 +77,7 @@ public class GetEventByIdTests : ApiHooks
     public async Task GetEventById_WithExistingEvent_DoesNotReturnUndocumentedField(string field)
     {
         await LoginAsConfiguredUser();
-        var created = (await Services.Events.CreateEvent(new CreateEventInputBuilder().Build())).Data?.Data;
+        var created = (await Services.Events.CreateEvent(new CreateEventRequestBuilder().Build())).Data?.Data;
         TrackEvent(created);
         Assert.That(created, Is.Not.Null, "Arrange failed: the event was not created");
 

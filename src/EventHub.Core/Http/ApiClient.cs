@@ -17,7 +17,7 @@ public sealed class ApiClient : IDisposable
         });
     }
 
-    public Task<RestResponse<T>> Get<T>(string endpoint, IDictionary<string, object?>? query = null) => ExecuteAsync<T>(new RestRequest(endpoint, Method.Get), query);
+    public Task<RestResponse<T>> Get<T>(string endpoint, Dictionary<string, object?>? query = null) => ExecuteAsync<T>(new RestRequest(endpoint, Method.Get), query);
 
     public Task<RestResponse<T>> Post<T>(string endpoint, object body) => ExecuteAsync<T>(new RestRequest(endpoint, Method.Post).AddJsonBody(body));
 
@@ -32,9 +32,9 @@ public sealed class ApiClient : IDisposable
     /// <summary>Requests sent so far by this client, for failure diagnostics. Never includes the token or auth bodies.</summary>
     public IReadOnlyList<ApiCall> Calls => _calls;
 
-    private async Task<RestResponse<T>> ExecuteAsync<T>(RestRequest request, IDictionary<string, object?>? query = null)
+    private async Task<RestResponse<T>> ExecuteAsync<T>(RestRequest request, Dictionary<string, object?>? query = null)
     {
-        foreach (var (name, value) in query ?? new Dictionary<string, object?>())
+        foreach (var (name, value) in query ?? new())
         {
             if (value is not null)
             {

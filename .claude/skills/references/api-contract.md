@@ -33,12 +33,12 @@ Only `/auth/me` declares `bearerAuth` in the spec, but the tests log in before c
 ## Auth
 
 ### POST /auth/register
-Creates an account and returns a JWT. Body `AuthInput`.
+Creates an account and returns a JWT. Body `AuthRequest`.
 - **201:** `AuthResponse`.
 - **400:** validation error (invalid email format, password too short) **or email already registered**. Body is `ValidationErrorResponse` shape: `{ success:false, error:"Validation failed", details:[{field, message}] }`. Example detail: `field: "email"`, `message: "A valid email is required"`.
 
 ### POST /auth/login
-Body `AuthInput`.
+Body `AuthRequest`.
 - **200:** `AuthResponse`.
 - **400:** wrong password or validation error. Example: `{ success:false, error:"Invalid credentials" }`.
 - **404:** no account for the email. Example: `{ success:false, error:"User not found" }`.
@@ -65,7 +65,7 @@ Paginated list. Query parameters:
 - **500:** `ErrorResponse`.
 
 ### POST /events
-Creates an event; `availableSeats` is set equal to `totalSeats`. Body `CreateEventInput`.
+Creates an event; `availableSeats` is set equal to `totalSeats`. Body `CreateEventRequest`.
 - **201:** `{ success:true, data: Event, message:"Event created successfully" }`.
 - **400:** `ValidationErrorResponse`.
 - **500:** `ErrorResponse`.
@@ -77,7 +77,7 @@ Creates an event; `availableSeats` is set equal to `totalSeats`. Body `CreateEve
 - **500:** `ErrorResponse`.
 
 ### PUT /events/{id}
-Body `CreateEventInput` (full replacement: every required field must be sent, including `title`).
+Body `CreateEventRequest` (full replacement: every required field must be sent, including `title`).
 - **200:** `{ success:true, data: Event, message:"Event updated successfully" }`.
 - **400:** `ValidationErrorResponse`.
 - **404:** `ErrorResponse`.
@@ -134,7 +134,7 @@ Cancels (permanently deletes) the booking and atomically restores the seats to t
 
 ## Schemas
 
-### AuthInput (request; both fields required)
+### AuthRequest (request; both fields required)
 | Field | Type | Rules |
 |---|---|---|
 | `email` | string | format email |
@@ -172,7 +172,7 @@ Cancels (permanently deletes) the booking and atomically restores the seats to t
 | `createdAt` | string | date-time |
 | `updatedAt` | string | date-time |
 
-### CreateEventInput (request)
+### CreateEventRequest (request)
 Required: `title`, `category`, `venue`, `city`, `eventDate`, `price`, `totalSeats`. Optional: `description`, `imageUrl`.
 
 | Field | Type | Notes |

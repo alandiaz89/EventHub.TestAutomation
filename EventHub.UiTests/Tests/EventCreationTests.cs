@@ -18,7 +18,7 @@ public class EventCreationTests : HybridHooks
     public async Task CreateEvent_AsNewlyRegisteredUser_EventIsCreatedAndFoundBySearch()
     {
         var user = await RegisterUser();
-        var newEvent = new CreateEventInputBuilder().WithTitle($"UI Event {Guid.NewGuid():N}").Build();
+        var newEvent = new CreateEventRequestBuilder().WithTitle($"UI Event {Guid.NewGuid():N}").Build();
         DeleteEventAfterTest(user, newEvent.Title);
 
         // Act and assert along the flow

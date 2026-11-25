@@ -6,10 +6,10 @@ namespace EventHub.Core.Services;
 
 public sealed class EventsService(ApiClient api)
 {
-    public Task<RestResponse<EventsResponse>> GetEvents(EventsInput input) =>
+    public Task<RestResponse<EventsResponse>> GetEvents(EventsRequest input) =>
         api.Get<EventsResponse>("events", input.ToQuery());
 
-    public Task<RestResponse<EventResponse>> CreateEvent(CreateEventInput input) =>
+    public Task<RestResponse<EventResponse>> CreateEvent(CreateEventRequest input) =>
         api.Post<EventResponse>("events", input.ToPayload());
 
     /// <summary>Sends an arbitrary payload, for missing fields and wrong types.</summary>
@@ -28,7 +28,7 @@ public sealed class EventsService(ApiClient api)
         await api.Get<EventResponse>($"events/{id}");
 
     /// <summary>PUT replaces the whole event: every required field, including the title, must be sent.</summary>
-    public Task<RestResponse<EventResponse>> UpdateEvent(int id, CreateEventInput input) =>
+    public Task<RestResponse<EventResponse>> UpdateEvent(int id, CreateEventRequest input) =>
         api.Put<EventResponse>($"events/{id}", input.ToPayload());
 
     public Task<RestResponse> DeleteEvent(int id) =>

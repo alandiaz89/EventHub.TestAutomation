@@ -9,7 +9,7 @@ Verifies **what a system does**, ensuring its behavior meets the functional requ
 |---|---|---|---|
 | **Smoke** | A shallow, fast check that the critical functions work at all, run first on every build. If it fails, stop and do not run the rest. | A few happy-path conditions across the main areas. | Login returns 200 and a token; `GET /events` returns 200. |
 | **Sanity** | A narrow check, after a small change or fix, that the changed area works and nothing obvious broke. | Only the conditions around the change. | After fixing pagination, `page=1&limit=2` returns 2 events. |
-| **Regression** | Re-run existing tests to confirm that a change did not break behavior that worked before. | The stable, automated suite; run on every change and in CI. | The full `GetEventsTests` set after touching `EventsInput`. |
+| **Regression** | Re-run existing tests to confirm that a change did not break behavior that worked before. | The stable, automated suite; run on every change and in CI. | The full `GetEventsTests` set after touching `EventsRequest`. |
 | **Negative** | Verifies the system rejects or safely handles invalid input and unexpected use. | Invalid partitions and out-of-range boundaries; expected 4xx and a clear error. | `page=-1`, empty password, invalid token. |
 | **API functional** | Verifies endpoint behavior directly through the API: status code, body, headers, side effects. | Request in, status code and body out, without a browser. Lives in `EventHub.ApiTests`. | `GET /events?category=Festival` returns only Festival events. |
 | **UI functional** | Verifies behavior through the user interface: forms, navigation, messages. | Page object actions and visible outcomes. Lives in `EventHub.UiTests`. | The login form shows an error for a wrong password. |

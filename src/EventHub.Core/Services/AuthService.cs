@@ -6,10 +6,10 @@ namespace EventHub.Core.Services;
 
 public sealed class AuthService(ApiClient api)
 {
-    public Task<RestResponse<AuthResponse>> Register(AuthInput input) =>
+    public Task<RestResponse<AuthResponse>> Register(AuthRequest input) =>
         api.Post<AuthResponse>("auth/register", input);
 
-    public Task<RestResponse<AuthResponse>> Login(AuthInput input) =>
+    public Task<RestResponse<AuthResponse>> Login(AuthRequest input) =>
         api.Post<AuthResponse>("auth/login", input);
 
     public Task<RestResponse<MeResponse>> Me() =>

@@ -18,7 +18,7 @@ public class LoginTests : ApiHooks
     [Test]
     public async Task Login_WithValidCredentials_Returns200AndToken()
     {
-        var input = new AuthInputBuilder().Build();
+        var input = new AuthRequestBuilder().Build();
         var registered = await Services.Auth.Register(input);
         Assert.That((int)registered.StatusCode, Is.EqualTo(201), "Precondition: registration must succeed");
 
@@ -37,7 +37,7 @@ public class LoginTests : ApiHooks
     [Test]
     public async Task Me_WithValidToken_Returns200AndUser()
     {
-        var input = new AuthInputBuilder().Build();
+        var input = new AuthRequestBuilder().Build();
         var registered = await Services.Auth.Register(input);
         Assert.That((int)registered.StatusCode, Is.EqualTo(201), "Precondition: registration must succeed");
         await LoginAs(input);
@@ -86,11 +86,11 @@ public class LoginTests : ApiHooks
     [Test]
     public async Task Login_WithWrongPassword_Returns400()
     {
-        var input = new AuthInputBuilder().Build();
+        var input = new AuthRequestBuilder().Build();
         var registered = await Services.Auth.Register(input);
         Assert.That((int)registered.StatusCode, Is.EqualTo(201), "Precondition: registration must succeed");
 
-        var response = await Services.Auth.Login(new AuthInputBuilder().WithEmail(input.Email).WithPassword("Wrong@1234").Build());
+        var response = await Services.Auth.Login(new AuthRequestBuilder().WithEmail(input.Email).WithPassword("Wrong@1234").Build());
 
         ApiAssert.Error(response, 400, "Invalid email or password");
     }
@@ -98,7 +98,7 @@ public class LoginTests : ApiHooks
     [Test]
     public async Task Login_WithUnregisteredEmail_Returns400()
     {
-        var response = await Services.Auth.Login(new AuthInputBuilder().Build());
+        var response = await Services.Auth.Login(new AuthRequestBuilder().Build());
 
         ApiAssert.Error(response, 400, "Invalid email or password");
     }

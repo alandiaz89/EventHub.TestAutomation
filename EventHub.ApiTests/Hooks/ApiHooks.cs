@@ -78,11 +78,11 @@ public abstract class ApiHooks
     protected async Task LoginAsConfiguredUser()
     {
         var (email, password) = Config.RequireUserCredentials();
-        await LoginAs(new AuthInput(email, password));
+        await LoginAs(new AuthRequest(email, password));
     }
 
     /// <summary>Logs in and uses the token for the following requests. Fails the test as a precondition if login fails.</summary>
-    protected async Task LoginAs(AuthInput input)
+    protected async Task LoginAs(AuthRequest input)
     {
         var response = await Services.Auth.Login(input);
         var token = response.Data?.Token;

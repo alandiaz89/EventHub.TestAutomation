@@ -18,7 +18,7 @@ public class DeleteEventTests : ApiHooks
     public async Task DeleteEvent_WithExistingEvent_Returns200AndEventIsGone()
     {
         await LoginAsConfiguredUser();
-        var created = (await Services.Events.CreateEvent(new CreateEventInputBuilder().Build())).Data?.Data;
+        var created = (await Services.Events.CreateEvent(new CreateEventRequestBuilder().Build())).Data?.Data;
         TrackEvent(created);
         Assert.That(created, Is.Not.Null, "Precondition: the event to delete must be created");
 

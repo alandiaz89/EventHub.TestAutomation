@@ -1,7 +1,7 @@
 namespace EventHub.Core.TestData;
 
 /// <summary>
-/// Valid values for the event fields the API accepts. <see cref="Builders.CreateEventInputBuilder"/> picks from these,
+/// Valid values for the event fields the API accepts. <see cref="Builders.CreateEventRequestBuilder"/> picks from these,
 /// so each generated event looks different. Title, category and event date are not here: the builder generates them
 /// (unique title, enum category, a future date).
 /// </summary>

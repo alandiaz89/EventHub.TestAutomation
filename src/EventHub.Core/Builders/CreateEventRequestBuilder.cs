@@ -3,7 +3,7 @@ using EventHub.Core.TestData;
 
 namespace EventHub.Core.Builders;
 
-public sealed class CreateEventInputBuilder
+public sealed class CreateEventRequestBuilder
 {
     private string _title = $"Api Event {Guid.NewGuid():N}";
     // Defaults are picked at random from EventData so generated events vary; tests override only what they assert on.
@@ -17,60 +17,60 @@ public sealed class CreateEventInputBuilder
 
     private string? _imageUrl = EventData.Random(EventData.ImageUrls);
 
-    public CreateEventInputBuilder WithTitle(string title)
+    public CreateEventRequestBuilder WithTitle(string title)
     {
         _title = title;
         return this;
     }
 
-    public CreateEventInputBuilder WithDescription(string? description)
+    public CreateEventRequestBuilder WithDescription(string? description)
     {
         _description = description;
         return this;
     }
 
-    public CreateEventInputBuilder WithCategory(EventCategory category)
+    public CreateEventRequestBuilder WithCategory(EventCategory category)
     {
         _category = category.ToString();
         return this;
     }
 
-    public CreateEventInputBuilder WithVenue(string venue)
+    public CreateEventRequestBuilder WithVenue(string venue)
     {
         _venue = venue;
         return this;
     }
 
-    public CreateEventInputBuilder WithCity(string city)
+    public CreateEventRequestBuilder WithCity(string city)
     {
         _city = city;
         return this;
     }
 
-    public CreateEventInputBuilder WithEventDate(DateTimeOffset eventDate)
+    public CreateEventRequestBuilder WithEventDate(DateTimeOffset eventDate)
     {
         _eventDate = eventDate;
         return this;
     }
 
-    public CreateEventInputBuilder WithPrice(decimal price)
+    public CreateEventRequestBuilder WithPrice(decimal price)
     {
         _price = price;
         return this;
     }
 
-    public CreateEventInputBuilder WithTotalSeats(int totalSeats)
+    public CreateEventRequestBuilder WithTotalSeats(int totalSeats)
     {
         _totalSeats = totalSeats;
         return this;
     }
 
-    public CreateEventInputBuilder WithImageUrl(string? imageUrl)
+    public CreateEventRequestBuilder WithImageUrl(string? imageUrl)
     {
         _imageUrl = imageUrl;
         return this;
     }
 
-    public CreateEventInput Build() =>
+    public CreateEventRequest Build() =>
         new(_title, _description, _category, _venue, _city, _eventDate, _price, _totalSeats, _imageUrl);
 }

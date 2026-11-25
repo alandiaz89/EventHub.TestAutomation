@@ -1,6 +1,6 @@
 namespace EventHub.Core.Models.Events;
 
-public sealed class EventsInput
+public sealed class EventsRequest
 {
     public EventCategory? Category { get; init; }
     /// <summary>Category sent as raw text (overrides <see cref="Category"/>); for casing, empty and invalid-value tests.</summary>
@@ -10,7 +10,7 @@ public sealed class EventsInput
     public int? Page { get; init; }
     public int? Limit { get; init; }
 
-    public IDictionary<string, object?> ToQuery() => new Dictionary<string, object?>
+    public Dictionary<string, object?> ToQuery() => new()
     {
         ["category"] = CategoryText ?? Category?.ToString(),
         ["city"] = City,

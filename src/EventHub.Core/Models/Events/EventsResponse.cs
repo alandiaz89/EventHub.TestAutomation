@@ -7,10 +7,10 @@ public sealed record EventItem(
     string Title,
     string? Description,
     string Category,
-    string? Venue,
-    string? City,
+    string Venue,
+    string City,
     DateTimeOffset EventDate,
-    string? Price,
+    string Price,
     int TotalSeats,
     int AvailableSeats,
     string? ImageUrl = null);

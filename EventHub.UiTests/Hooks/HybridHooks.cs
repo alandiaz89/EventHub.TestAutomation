@@ -39,15 +39,15 @@ public abstract class HybridHooks : PlaywrightHooks
         }
     }
 
-    protected async Task<AuthInput> RegisterUser()
+    protected async Task<AuthRequest> RegisterUser()
     {
-        var user = new AuthInputBuilder().Build();
+        var user = new AuthRequestBuilder().Build();
         var response = await Services.Auth.Register(user);
         Assert.That((int)response.StatusCode, Is.EqualTo(201), "Precondition: registration must succeed");
         return user;
     }
 
-    protected void CancelBookingsAfterTest(AuthInput owner) =>
+    protected void CancelBookingsAfterTest(AuthRequest owner) =>
         Cleanup.Add(async () =>
         {
             var login = await Services.Auth.Login(owner);
@@ -65,7 +65,7 @@ public abstract class HybridHooks : PlaywrightHooks
             }
         });
     
-    protected void DeleteEventAfterTest(AuthInput owner, string title) =>
+    protected void DeleteEventAfterTest(AuthRequest owner, string title) =>
         Cleanup.Add(async () =>
         {
             var login = await Services.Auth.Login(owner);
@@ -76,7 +76,7 @@ public abstract class HybridHooks : PlaywrightHooks
             }
 
             _api!.SetToken(token);
-            var found = await Services.Events.GetEvents(new EventsInput { Search = title, Limit = 100 });
+            var found = await Services.Events.GetEvents(new EventsRequest { Search = title, Limit = 100 });
             foreach (var item in (found.Data?.Data ?? []).Where(e => e.Title == title))
             {
                 await Services.Events.DeleteEvent(item.Id);

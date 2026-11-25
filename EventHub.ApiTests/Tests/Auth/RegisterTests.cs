@@ -17,7 +17,7 @@ public class RegisterTests : ApiHooks
     [Test]
     public async Task Register_WithValidData_Returns201AndToken()
     {
-        var input = new AuthInputBuilder().Build();
+        var input = new AuthRequestBuilder().Build();
 
         var response = await Services.Auth.Register(input);
 
@@ -35,7 +35,7 @@ public class RegisterTests : ApiHooks
     [Test]
     public async Task Register_WithAlreadyRegisteredEmail_Returns400()
     {
-        var input = new AuthInputBuilder().Build();
+        var input = new AuthRequestBuilder().Build();
         var first = await Services.Auth.Register(input);
         Assert.That((int)first.StatusCode, Is.EqualTo(201), "Precondition: first registration must succeed");
 
@@ -48,7 +48,7 @@ public class RegisterTests : ApiHooks
     [TestCase("", TestName = "Register_WithEmptyEmail_Returns400")]
     public async Task Register_WithInvalidEmail_Returns400(string email)
     {
-        var input = new AuthInputBuilder().WithEmail(email).Build();
+        var input = new AuthRequestBuilder().WithEmail(email).Build();
 
         var response = await Services.Auth.Register(input);
 
@@ -59,7 +59,7 @@ public class RegisterTests : ApiHooks
     [TestCase("", TestName = "Register_WithEmptyPassword_Returns400")]
     public async Task Register_WithInvalidPassword_Returns400(string password)
     {
-        var input = new AuthInputBuilder().WithPassword(password).Build();
+        var input = new AuthRequestBuilder().WithPassword(password).Build();
 
         var response = await Services.Auth.Register(input);
 

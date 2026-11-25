@@ -37,7 +37,7 @@ public static class ApiAssert
     }
 
     /// <summary>Checks every field the API echoes back for an event against the input that was sent.</summary>
-    public static void EventMatches(CreateEventInput expected, EventItem? actual)
+    public static void EventMatches(CreateEventRequest expected, EventItem? actual)
     {
         Assert.That(actual, Is.Not.Null);
         Assert.Multiple(() =>

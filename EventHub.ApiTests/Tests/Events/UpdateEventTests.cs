@@ -42,15 +42,15 @@ public class UpdateEventTests : ApiHooks
         ApiAssert.EventMatches(changes, fetched.Data?.Data);
     }
 
-    private async Task<(EventItem Created, CreateEventInput Changes)> CreateEventAndPrepareChanges()
+    private async Task<(EventItem Created, CreateEventRequest Changes)> CreateEventAndPrepareChanges()
     {
         await LoginAsConfiguredUser();
-        var original = new CreateEventInputBuilder().Build();
+        var original = new CreateEventRequestBuilder().Build();
         var created = (await Services.Events.CreateEvent(original)).Data?.Data;
         TrackEvent(created);
         Assert.That(created, Is.Not.Null, "Precondition: the event to update must be created");
 
-        var changes = new CreateEventInputBuilder()
+        var changes = new CreateEventRequestBuilder()
             .WithTitle(original.Title)
             .WithDescription("Updated by API tests")
             .WithCategory(EventCategory.Workshop)

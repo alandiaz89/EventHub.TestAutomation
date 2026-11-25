@@ -20,6 +20,11 @@ public class TestConfig
     {
         var env = Environment.GetEnvironmentVariable("TEST_ENV");
 
+        if(!string.IsNullOrWhiteSpace(env) && !File.Exists(Path.Combine(AppContext.BaseDirectory, $"appsettings.{env}.json")))
+            {
+                throw new InvalidOperationException($"TEST_ENV is {env} but appsettings.{env}.json was not found");
+            }
+
         return new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional: false)
@@ -27,6 +32,6 @@ public class TestConfig
             .AddJsonFile("appsettings.local.json", optional: true)
             .AddEnvironmentVariables()
             .Build()
-            .Get<TestConfig>() ?? new TestConfig();
+            .Get<TestConfig>() ?? throw new InvalidOperationException("Could not bind test configuration,");
     }
 }

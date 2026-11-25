@@ -36,7 +36,7 @@ Use the `test-design-techniques` skill: it holds the technique checklists, the f
 
 ### White box (from the code)
 - Only when source is available (this repository, or code the user points to). Read the code under test and derive conditions for **statement, branch and condition coverage**: each `if`/`else` outcome, loop with zero, one and many iterations, `switch` case and default, exception path, null and empty handling, and each early return.
-- Also read the test framework code that shapes requests (for example how `EventsInput.ToQuery()` builds the query, and that null values are skipped) and note conditions that depend on it.
+- Also read the test framework code that shapes requests (for example how `EventsRequest.ToQuery()` builds the query, and that null values are skipped) and note conditions that depend on it.
 - State plainly when the system under test is a deployed service whose code you cannot see; then white box conditions are limited to the repository code, and you say so in the output.
 
 ### Experience-based

@@ -1,6 +1,6 @@
 namespace EventHub.Core.Models.Events;
 
-public sealed record CreateEventInput(
+public sealed record CreateEventRequest(
     string Title,
     string? Description,
     string Category,

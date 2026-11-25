@@ -5,7 +5,7 @@ using EventHub.UiTests.Elements;
 namespace EventHub.UiTests.Pages;
 
 public sealed class AdminEventsPage(AdminEventsElements adminEventsElements)
-{    public async Task CreateEvent(CreateEventInput input)
+{    public async Task CreateEvent(CreateEventRequest input)
     {
         await adminEventsElements.TitleInput.FillAsync(input.Title);
         await adminEventsElements.CategorySelect.SelectOptionAsync(input.Category);

@@ -19,7 +19,7 @@ public class GetEventsTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Services.Events.GetEvents(new EventsInput {});
+        var response = await Services.Events.GetEvents(new EventsRequest {});
 
         System.Console.WriteLine(response.Content);
 
@@ -40,7 +40,7 @@ public class GetEventsTests : ApiHooks
             UseToken(token);
         }
 
-        var response = await Services.Events.GetEvents(new EventsInput());
+        var response = await Services.Events.GetEvents(new EventsRequest());
 
         ApiAssert.Error(response, 401, expectedError);
     }
@@ -53,7 +53,7 @@ public class GetEventsTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Services.Events.GetEvents(new EventsInput { Page = -1 });
+        var response = await Services.Events.GetEvents(new EventsRequest { Page = -1 });
 
         Assert.That((int)response.StatusCode, Is.EqualTo(400));
     }
@@ -65,7 +65,7 @@ public class GetEventsTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Services.Events.GetEvents(new EventsInput { Category = category });
+        var response = await Services.Events.GetEvents(new EventsRequest { Category = category });
 
         Assert.That((int)response.StatusCode, Is.EqualTo(200));
         Assert.That(response.Data?.Data, Is.Not.Empty);
@@ -78,7 +78,7 @@ public class GetEventsTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Services.Events.GetEvents(new EventsInput { Category = category });
+        var response = await Services.Events.GetEvents(new EventsRequest { Category = category });
 
         Assert.That((int)response.StatusCode, Is.EqualTo(200));
         Assert.That(response.Data, Is.Not.Null);
@@ -94,8 +94,8 @@ public class GetEventsTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var exactCase = await Services.Events.GetEvents(new EventsInput { Category = EventCategory.Festival });
-        var lowerCase = await Services.Events.GetEvents(new EventsInput { CategoryText = "festival" });
+        var exactCase = await Services.Events.GetEvents(new EventsRequest { Category = EventCategory.Festival });
+        var lowerCase = await Services.Events.GetEvents(new EventsRequest { CategoryText = "festival" });
 
         Assert.That((int)exactCase.StatusCode, Is.EqualTo(200));
         Assert.That((int)lowerCase.StatusCode, Is.EqualTo(200));
@@ -109,7 +109,7 @@ public class GetEventsTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Services.Events.GetEvents(new EventsInput { City = "Delhi" });
+        var response = await Services.Events.GetEvents(new EventsRequest { City = "Delhi" });
 
         Assert.That((int)response.StatusCode, Is.EqualTo(200));
         Assert.That(response.Data?.Data, Is.Not.Empty);
@@ -121,7 +121,7 @@ public class GetEventsTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Services.Events.GetEvents(new EventsInput { Search = "Diwali" });
+        var response = await Services.Events.GetEvents(new EventsRequest { Search = "Diwali" });
 
         Assert.That((int)response.StatusCode, Is.EqualTo(200));
         Assert.That(response.Data?.Data, Is.Not.Empty);
@@ -136,9 +136,9 @@ public class GetEventsTests : ApiHooks
     public async Task GetEvents_WithEmptyTextFilters_ReturnsAllEvents(string? city, string? search)
     {
         await LoginAsConfiguredUser();
-        var unfiltered = await Services.Events.GetEvents(new EventsInput());
+        var unfiltered = await Services.Events.GetEvents(new EventsRequest());
 
-        var response = await Services.Events.GetEvents(new EventsInput { City = city, Search = search });
+        var response = await Services.Events.GetEvents(new EventsRequest { City = city, Search = search });
 
         Assert.That((int)unfiltered.StatusCode, Is.EqualTo(200));
         Assert.That((int)response.StatusCode, Is.EqualTo(200));
@@ -164,7 +164,7 @@ public class GetEventsTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Services.Events.GetEvents(new EventsInput { Category = EventCategory.Festival, City = "Delhi" });
+        var response = await Services.Events.GetEvents(new EventsRequest { Category = EventCategory.Festival, City = "Delhi" });
 
         Assert.That((int)response.StatusCode, Is.EqualTo(200));
         Assert.That(response.Data?.Data, Is.Not.Empty);

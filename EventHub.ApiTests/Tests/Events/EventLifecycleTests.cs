@@ -24,8 +24,8 @@ public class EventLifecycleTests : ApiHooks
     public async Task Event_CreateReadUpdateDelete_WorksOnTheSameEvent()
     {
         await LoginAsConfiguredUser();
-        var original = new CreateEventInputBuilder().Build();
-        var changes = new CreateEventInputBuilder()
+        var original = new CreateEventRequestBuilder().Build();
+        var changes = new CreateEventRequestBuilder()
             .WithTitle(original.Title)
             .WithDescription("Updated by the lifecycle test")
             .WithCategory(EventCategory.Workshop)

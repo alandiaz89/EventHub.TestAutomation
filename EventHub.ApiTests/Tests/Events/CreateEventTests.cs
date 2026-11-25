@@ -20,7 +20,7 @@ public class CreateEventTests : ApiHooks
     public async Task CreateEvent_WithValidData_Returns201AndEventIsRetrievable()
     {
         await LoginAsConfiguredUser();
-        var input = new CreateEventInputBuilder().Build();
+        var input = new CreateEventRequestBuilder().Build();
 
         var response = await Services.Events.CreateEvent(input);
         TrackEvent(response.Data?.Data);
@@ -55,7 +55,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Services.Events.CreateEvent(new CreateEventInputBuilder().WithPrice(100).Build());
+        var response = await Services.Events.CreateEvent(new CreateEventRequestBuilder().WithPrice(100).Build());
         TrackEvent(response.Data?.Data);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(201));
@@ -70,8 +70,8 @@ public class CreateEventTests : ApiHooks
     public async Task CreateEvent_WithDuplicateTitle_DoesNotOverwriteExistingEvent()
     {
         await LoginAsConfiguredUser();
-        var first = new CreateEventInputBuilder().WithDescription("first").Build();
-        var second = new CreateEventInputBuilder().WithTitle(first.Title).WithDescription("second").Build();
+        var first = new CreateEventRequestBuilder().WithDescription("first").Build();
+        var second = new CreateEventRequestBuilder().WithTitle(first.Title).WithDescription("second").Build();
 
         var firstResponse = await Services.Events.CreateEvent(first);
         TrackEvent(firstResponse.Data?.Data);
@@ -88,7 +88,7 @@ public class CreateEventTests : ApiHooks
     public async Task CreateEvent_WithoutImageUrl_Returns201AndImageUrlIsNull()
     {
         await LoginAsConfiguredUser();
-        var input = new CreateEventInputBuilder().WithImageUrl(null).Build();
+        var input = new CreateEventRequestBuilder().WithImageUrl(null).Build();
 
         var response = await Services.Events.CreateEvent(input);
         TrackEvent(response.Data?.Data);
@@ -101,7 +101,7 @@ public class CreateEventTests : ApiHooks
     public async Task CreateEvent_WithValidData_SetsAvailableSeatsEqualToTotalSeats()
     {
         await LoginAsConfiguredUser();
-        var input = new CreateEventInputBuilder().WithTotalSeats(25).Build();
+        var input = new CreateEventRequestBuilder().WithTotalSeats(25).Build();
 
         var response = await Services.Events.CreateEvent(input);
         TrackEvent(response.Data?.Data);
@@ -118,7 +118,7 @@ public class CreateEventTests : ApiHooks
     public async Task CreateEvent_WithoutOptionalDescription_Returns201()
     {
         await LoginAsConfiguredUser();
-        var payload = new CreateEventInputBuilder().Build().ToPayload();
+        var payload = new CreateEventRequestBuilder().Build().ToPayload();
         payload.Remove("description");
 
         var response = await Services.Events.CreateEvent(payload);
@@ -134,7 +134,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Services.Events.CreateEvent(new CreateEventInputBuilder().WithTotalSeats(totalSeats).Build());
+        var response = await Services.Events.CreateEvent(new CreateEventRequestBuilder().WithTotalSeats(totalSeats).Build());
         TrackEvent(response.Data?.Data);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(201));
@@ -146,7 +146,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Services.Events.CreateEvent(new CreateEventInputBuilder().WithPrice(0).Build());
+        var response = await Services.Events.CreateEvent(new CreateEventRequestBuilder().WithPrice(0).Build());
         TrackEvent(response.Data?.Data);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(201));
@@ -159,7 +159,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Services.Events.CreateEvent(new CreateEventInputBuilder().WithTotalSeats(totalSeats).Build());
+        var response = await Services.Events.CreateEvent(new CreateEventRequestBuilder().WithTotalSeats(totalSeats).Build());
         TrackEvent(response.Data?.Data);
 
         ApiAssert.ValidationError(response, "totalSeats", "Total seats must be a positive integer");
@@ -170,7 +170,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Services.Events.CreateEvent(new CreateEventInputBuilder().WithPrice(-1).Build());
+        var response = await Services.Events.CreateEvent(new CreateEventRequestBuilder().WithPrice(-1).Build());
         TrackEvent(response.Data?.Data);
 
         ApiAssert.ValidationError(response, "price", "Price must be a non-negative number");
@@ -182,7 +182,7 @@ public class CreateEventTests : ApiHooks
         await LoginAsConfiguredUser();
 
         var response = await Services.Events.CreateEvent(
-            new CreateEventInputBuilder().WithEventDate(DateTimeOffset.UtcNow.AddDays(-1)).Build());
+            new CreateEventRequestBuilder().WithEventDate(DateTimeOffset.UtcNow.AddDays(-1)).Build());
         TrackEvent(response.Data?.Data);
 
         ApiAssert.ValidationError(response, "eventDate", "Event date must be in the future");
@@ -198,7 +198,7 @@ public class CreateEventTests : ApiHooks
     public async Task CreateEvent_WithoutRequiredField_Returns400(string field, string expectedMessage)
     {
         await LoginAsConfiguredUser();
-        var payload = new CreateEventInputBuilder().Build().ToPayload();
+        var payload = new CreateEventRequestBuilder().Build().ToPayload();
         payload.Remove(field);
 
         var response = await Services.Events.CreateEvent(payload);
@@ -219,7 +219,7 @@ public class CreateEventTests : ApiHooks
     public async Task CreateEvent_WithWrongFieldType_Returns400(string field, object value, string expectedMessage)
     {
         await LoginAsConfiguredUser();
-        var payload = new CreateEventInputBuilder().Build().ToPayload();
+        var payload = new CreateEventRequestBuilder().Build().ToPayload();
         payload[field] = value;
 
         var response = await Services.Events.CreateEvent(payload);
@@ -246,7 +246,7 @@ public class CreateEventTests : ApiHooks
     {
         await LoginAsConfiguredUser();
 
-        var response = await Services.Events.CreateEvent(new CreateEventInputBuilder().WithTitle(new string('a', 1000)).Build());
+        var response = await Services.Events.CreateEvent(new CreateEventRequestBuilder().WithTitle(new string('a', 1000)).Build());
         TrackEvent(response.Data?.Data);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(400));
@@ -273,7 +273,7 @@ public class CreateEventTests : ApiHooks
             UseToken(token);
         }
 
-        var response = await Services.Events.CreateEvent(new CreateEventInputBuilder().Build());
+        var response = await Services.Events.CreateEvent(new CreateEventRequestBuilder().Build());
         TrackEvent(response.Data?.Data);
 
         ApiAssert.Error(response, 401, expectedError);
